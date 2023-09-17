@@ -24,6 +24,7 @@
 
 #include <iostream> 
 #include <string>
+#include <cstring>
 
 #include "ue_store.h"
 
