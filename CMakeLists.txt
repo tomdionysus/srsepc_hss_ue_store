@@ -22,9 +22,12 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+find_package(PostgreSQL REQUIRED)
+
 include_directories(
   /usr/include/mysql
   /usr/local/include/mysql
+  ${PostgreSQL_INCLUDE_DIRS}
   ./
 )
 
@@ -37,9 +40,14 @@ add_library(
   srsepc_hss_ue_store
   src/ue_store_csv.cc
   src/ue_store_mysql.cc
+  src/ue_store_psql.cc
 )
 
-target_link_libraries(srsepc_hss_ue_store mysqlclient)
+target_link_libraries(
+  srsepc_hss_ue_store 
+  mysqlclient
+  PostgreSQL::PostgreSQL
+)
 
 enable_testing()
 

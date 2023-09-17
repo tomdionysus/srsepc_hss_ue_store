@@ -92,20 +92,28 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx) {
 				unsigned long *lengths = lengths = mysql_fetch_lengths(result);
 				
 				// Get IMSI
-				ctx->imsi = std::stoull(row[0]);
+				if(row[0]) {
+					ctx->imsi = std::stoull(row[0]);
+				}
 
 				// Get Name
-				ctx->name = std::string(row[1]);
+				if(row[1]) {
+					ctx->name = std::string(row[1]);
+				}
 
 				// Get Auth Type
-				if(strcmp("xor",row[2]) == 0) { ctx->algo = HSS_ALGO_XOR; }
-				if(strcmp("mil",row[2]) == 0) { ctx->algo = HSS_ALGO_MILENAGE; }
+				if(row[2]) {
+					if(strcmp("xor",row[2]) == 0) { ctx->algo = HSS_ALGO_XOR; }
+					if(strcmp("mil",row[2]) == 0) { ctx->algo = HSS_ALGO_MILENAGE; }
+				}
 
 				// Get KI
 				memcpy(ctx->key, (const char*)row[3], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[3], 16));
 
 				// Get OP / OPC Type
-				ctx->op_configured = (strcmp("opc",row[4]) == 0);
+				if(row[4]) {
+					ctx->op_configured = (strcmp("opc",row[4]) == 0);
+				}
 
 				// Get OP/OPC
 				memcpy(ctx->op, (const char*)row[5], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[5], 16));
@@ -118,16 +126,22 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx) {
 				memcpy(ctx->sqn, (const char*)row[8], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[8], 6));
 
 				// Get QCI
-				ctx->qci = atoi(row[9]);
+				if(row[9]) {
+					ctx->qci = atoi(row[9]);
+				}
 
 				// Get Assigned IP, or mark dynamic
-				ctx->static_ip_addr = std::string(row[10]);
+				if(row[10]) {
+					ctx->static_ip_addr = std::string(row[10]);
+				}
 
 				// // Debug
 				// for(uint i = 0; i < num_fields; i++) {
 				//   printf("[%.*s](%d) ", (int) lengths[i], row[i] ? row[i] : "NULL", lengths[i]);
 				// }
 				// printf("\n");
+
+				success = true;
 			}
 		} 
 

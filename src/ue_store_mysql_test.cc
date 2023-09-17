@@ -27,21 +27,21 @@ using namespace std;
 using namespace srsepc;
 
 // Instantiate, check 
-TEST(FreemapTest, NewDestroy) {
+TEST(UEStoreMySQL, NewDestroy) {
 	ue_store *store = new ue_store_mysql("localhost", "srsepc", "root", "");
 
 	delete store;
 }
 
 // Load Single Row
-TEST(FreemapTest, SingleRow) {
+TEST(UEStoreMySQL, SingleRow) {
 	ue_store *store = new ue_store_mysql("localhost", "srsepc", "root", "");
 
 	EXPECT_EQ(store->init(), 0);
 
 	hss_ue_ctx_t ctx;
 
-	store->get_ue_ctx(530302814353573, &ctx);
+	EXPECT_EQ(store->get_ue_ctx(530302814353573, &ctx), true);
 
 	const uint8_t ki[] = { 0x7E, 0x9B, 0xA6, 0x62, 0x5F, 0xD1, 0xA7, 0x2B, 0x48, 0xF0, 0xA6, 0x7A, 0xD5, 0xD5, 0x27, 0x54 };
 	const uint8_t op[] = { 0x6b, 0x34, 0x44, 0xc5, 0x83, 0x5a, 0x5d, 0xf7, 0xd3, 0xad, 0xd5, 0x7e, 0x85, 0xb7, 0x70, 0xe3 };
@@ -60,6 +60,21 @@ TEST(FreemapTest, SingleRow) {
 	EXPECT_EQ(*sqn, *ctx.sqn);
 	EXPECT_EQ(ctx.qci, 1);
 	EXPECT_EQ(ctx.static_ip_addr, "192.168.11.44");
+
+	EXPECT_EQ(store->close(), 0);
+
+	delete store;
+}
+
+// Not Found
+TEST(UEStoreMySQL, NotFound) {
+	ue_store *store = new ue_store_mysql("localhost", "srsepc", "root", "");
+
+	EXPECT_EQ(store->init(), 0);
+
+	hss_ue_ctx_t ctx;
+
+	EXPECT_EQ(store->get_ue_ctx(28347823748, &ctx), false);
 
 	EXPECT_EQ(store->close(), 0);
 
