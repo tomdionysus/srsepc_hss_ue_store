@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(srsrts-hss-userstore)
+project(srsepc_hss_ue_store)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -25,6 +25,7 @@ FetchContent_MakeAvailable(googletest)
 include_directories(
   /usr/include/mysql
   /usr/local/include/mysql
+  ./
 )
 
 link_directories(
@@ -33,37 +34,28 @@ link_directories(
 )
 
 add_library(
-  srsrts-hss-userstore
-  src/user_store_mysql.cpp
+  srsepc_hss_ue_store
+  src/ue_store_csv.cc
+  src/ue_store_mysql.cc
 )
 
-target_link_libraries(srsrts-hss-userstore mysqlclient)
+target_link_libraries(srsepc_hss_ue_store mysqlclient)
 
 enable_testing()
 
 add_executable(
-  srsrts-hss-userstore_test
-  src/user_store_mysql_test.cpp
+  srsepc_hss_ue_store_test
+  src/ue_store_mysql_test.cc
 )
 
 target_link_libraries(
-  srsrts-hss-userstore_test
+  srsepc_hss_ue_store_test
   GTest::gtest_main
-  srsrts-hss-userstore
-)
-
-add_executable(
-  srsrts-hss-userstore-demo
-  src/main.cpp
-)
-
-target_link_libraries(
-  srsrts-hss-userstore-demo
-  srsrts-hss-userstore
+  srsepc_hss_ue_store
 )
 
 include(GoogleTest)
-gtest_discover_tests(srsrts-hss-userstore_test)
+gtest_discover_tests(srsepc_hss_ue_store_test)
 
 include_directories(
   ${CMAKE_BINARY_DIR}/src
