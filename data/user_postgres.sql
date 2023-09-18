@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS "ue_subscriber";
+DROP TYPE IF EXISTS "public"."user_auth";
+DROP TYPE IF EXISTS "public"."user_op_type";
+
 -- Define the "user_auth" enumeration type
 CREATE TYPE "public"."user_auth" AS ENUM (
   'xor',
@@ -16,8 +20,7 @@ CREATE TABLE "ue_subscriber" (
   "auth" "public"."user_auth" NOT NULL DEFAULT 'mil',
   "key_identifier" bytea NOT NULL,
   "op_type" "public"."user_op_type" DEFAULT 'opc',
-  "op" bytea DEFAULT NULL,
-  "opc" bytea DEFAULT NULL,
+  "op_opc" bytea DEFAULT NULL,
   "amf" bytea NOT NULL,
   "sqn" bytea NOT NULL,
   "qci" smallint NOT NULL,
@@ -31,8 +34,7 @@ INSERT INTO "ue_subscriber" (
   "auth",
   "key_identifier",
   "op_type",
-  "op",
-  "opc",
+  "op_opc",
   "amf",
   "sqn",
   "qci",
@@ -44,7 +46,6 @@ INSERT INTO "ue_subscriber" (
   E'\\x7E3F3F625FD1A72B483F7A3F3F275400'::bytea,
   'opc',
   E'\\x6B3444C5835A5D3FD3AD3F7E3F3F703F'::bytea,
-  E'\\x8B5B5F24017F411BA8DE85F03EA16480'::bytea,
   E'\\x3F55'::bytea,
   E'\\x010203040506'::bytea,
   1,

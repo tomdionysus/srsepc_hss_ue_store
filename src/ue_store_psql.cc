@@ -59,8 +59,8 @@ bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
   bool success = false;
 
   // Build the query
-  std::string query = "SELECT \"imsi\", \"name\", \"auth\", \"key_identifier\", \"op_type\", \"op\", "
-                      "\"opc\", \"amf\", \"sqn\", \"qci\", \"ip_alloc\" FROM \"ue_subscriber\" WHERE \"imsi\" = " +
+  std::string query = "SELECT \"imsi\", \"name\", \"auth\", \"key_identifier\", \"op_type\", \"op_opc\", \"amf\", "
+                      "\"sqn\", \"qci\", \"ip_alloc\" FROM \"ue_subscriber\" WHERE \"imsi\" = " +
                       std::to_string(ssid);
 
   // Perform the query
@@ -74,8 +74,8 @@ bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
     if (num_rows == 1) {
       int num_fields = PQnfields(result);
 
-      // There should be 11 fields
-      if (num_fields == 11) {
+      // There should be 10 fields
+      if (num_fields == 10) {
         // Get IMSI
         ctx->imsi = strtoull(PQgetvalue(result, 0, 0), nullptr, 10);
 
@@ -107,31 +107,26 @@ bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
         // Get OP/OPC
         byteaHexStr = PQgetvalue(result, 0, 5);
         byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
-        memcpy(ctx->op, byteaData, 16);
-        PQfreemem(byteaData);
-
-        byteaHexStr = PQgetvalue(result, 0, 6);
-        byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
-        memcpy(ctx->opc, byteaData, 16);
+        memcpy(ctx->op_configured ? ctx->opc : ctx->op, byteaData, 16);
         PQfreemem(byteaData);
 
         // Get AMF
-        byteaHexStr = PQgetvalue(result, 0, 7);
+        byteaHexStr = PQgetvalue(result, 0, 6);
         byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
         memcpy(ctx->amf, byteaData, 2);
         PQfreemem(byteaData);
 
         // Get SQN
-        byteaHexStr = PQgetvalue(result, 0, 8);
+        byteaHexStr = PQgetvalue(result, 0, 7);
         byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
         memcpy(ctx->sqn, byteaData, 6);
         PQfreemem(byteaData);
 
         // Get QCI
-        ctx->qci = atoi(PQgetvalue(result, 0, 9));
+        ctx->qci = atoi(PQgetvalue(result, 0, 8));
 
         // Get Assigned IP, or mark dynamic
-        ctx->static_ip_addr = PQgetvalue(result, 0, 10);
+        ctx->static_ip_addr = PQgetvalue(result, 0, 9);
 
         success = true;
       } else {

@@ -41,7 +41,7 @@ uint ue_store_csv::init()
   // Open the CSV file
   std::ifstream file(_filename);
   if (!file.is_open()) {
-    std::cerr << "Failed to open CSV file." << std::endl;
+    std::cerr << "ue_store_csv::init : Failed to open CSV file." << std::endl;
     return 1;
   }
 
@@ -63,7 +63,7 @@ uint ue_store_csv::init()
     }
 
     if (tokens.size() != 10) {
-      std::cerr << "Invalid line in CSV file: " << line << std::endl;
+      std::cerr << "ue_store_csv::init : Invalid line in CSV file: " << line << std::endl;
       continue;
     }
 
@@ -73,12 +73,9 @@ uint ue_store_csv::init()
     user.algo = (tokens[1] == "xor") ? HSS_ALGO_XOR : HSS_ALGO_MILENAGE;
     user.imsi = std::stoull(tokens[2], nullptr, 10);
 
-    // 0   1   2               3                                4   5                                6    7            8 9
-    // ue1,xor,001010123456789,00112233445566778899aabbccddeeff,opc,63bfa50ee6523365ff14c1f45f88737d,9001,000000001234,7,dynamic
-
     // Parse and store the key, op, opc, amf, and sqn fields here
     if (tokens[3].size() != 32 || tokens[5].size() != 32 || tokens[6].size() != 4 || tokens[7].size() != 12) {
-      std::cerr << "Invalid data format in CSV file: " << line << std::endl;
+      std::cerr << "ue_store_csv::init : Invalid data format in CSV file: " << line << std::endl;
       continue;
     }
 
@@ -87,12 +84,12 @@ uint ue_store_csv::init()
       user.key[i]         = static_cast<uint8_t>(std::stoi(hexByte, nullptr, 16));
     }
 
-    user.op_configured  = (tokens[4] == "opc");
+    user.op_configured = (tokens[4] == "opc");
 
     for (int i = 0; i < 16; ++i) {
       std::string hexByte = tokens[5].substr(i * 2, 2);
       user.op[i]          = static_cast<uint8_t>(std::stoi(hexByte, nullptr, 16));
-      user.opc[i] = user.op[i];
+      user.opc[i]         = user.op[i];
     }
 
     for (int i = 0; i < 2; ++i) {
@@ -107,7 +104,7 @@ uint ue_store_csv::init()
 
     user.qci            = std::stoi(tokens[8]);
     user.static_ip_addr = tokens[9];
-    
+
     // Add the user to the map with IMSI as the key
     _ue_subscriber[user.imsi] = user;
   }
@@ -128,7 +125,8 @@ bool ue_store_csv::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
 {
   std::map<uint64_t, hss_ue_ctx_t>::iterator it;
   it = _ue_subscriber.find(ssid);
-  if (it == _ue_subscriber.end()) return false;
+  if (it == _ue_subscriber.end())
+    return false;
   *ctx = it->second;
   return true;
 }

@@ -62,8 +62,8 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
   bool success = false;
 
   // Build the query
-  std::string query = "SELECT `imsi`, `name`, `auth`, `key_identifier`, `op_type`, `op`, "
-                      "`opc`, `amf`, `sqn`, `qci`, `ip_alloc` FROM `ue_subscriber` WHERE `imsi` = ";
+  std::string query = "SELECT `imsi`, `name`, `auth`, `key_identifier`, `op_type`, `op_opc`, `amf`, `sqn`, `qci`, "
+                      "`ip_alloc` FROM `ue_subscriber` WHERE `imsi` = ";
   query += std::to_string(ssid);
 
   // Perform the query
@@ -85,58 +85,45 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
       MYSQL_ROW row        = mysql_fetch_row(result);
       uint      num_fields = mysql_num_fields(result);
 
-      // There should be 11 fields
-      if (num_fields == 11) {
+      // There should be 10 fields
+      if (num_fields == 10) {
         // Get Lengths
         unsigned long* lengths = lengths = mysql_fetch_lengths(result);
 
         // Get IMSI
-        if (row[0]) {
-          ctx->imsi = std::stoull(row[0]);
-        }
+        ctx->imsi = std::stoull(row[0]);
 
         // Get Name
-        if (row[1]) {
-          ctx->name = std::string(row[1]);
-        }
+        ctx->name = std::string(row[1]);
 
         // Get Auth Type
-        if (row[2]) {
-          if (strcmp("xor", row[2]) == 0) {
-            ctx->algo = HSS_ALGO_XOR;
-          }
-          if (strcmp("mil", row[2]) == 0) {
-            ctx->algo = HSS_ALGO_MILENAGE;
-          }
+        if (strcmp("xor", row[2]) == 0) {
+          ctx->algo = HSS_ALGO_XOR;
+        }
+        if (strcmp("mil", row[2]) == 0) {
+          ctx->algo = HSS_ALGO_MILENAGE;
         }
 
         // Get KI
         memcpy(ctx->key, (const char*)row[3], SRSEPC_HSS_UE_STORE_CLAMP(lengths[3], 16));
 
         // Get OP / OPC Type
-        if (row[4]) {
-          ctx->op_configured = (strcmp("opc", row[4]) == 0);
-        }
+        ctx->op_configured = (strcmp("opc", row[4]) == 0);
 
         // Get OP/OPC
-        memcpy(ctx->op, (const char*)row[5], SRSEPC_HSS_UE_STORE_CLAMP(lengths[5], 16));
-        memcpy(ctx->opc, (const char*)row[6], SRSEPC_HSS_UE_STORE_CLAMP(lengths[6], 16));
+        memcpy(ctx->op_configured ? ctx->opc : ctx->op, (const char*)row[5], SRSEPC_HSS_UE_STORE_CLAMP(lengths[5], 16));
 
         // Get AMF
-        memcpy(ctx->amf, (const char*)row[7], SRSEPC_HSS_UE_STORE_CLAMP(lengths[7], 2));
+        memcpy(ctx->amf, (const char*)row[6], SRSEPC_HSS_UE_STORE_CLAMP(lengths[6], 2));
 
         // Get SQN
-        memcpy(ctx->sqn, (const char*)row[8], SRSEPC_HSS_UE_STORE_CLAMP(lengths[8], 6));
+        memcpy(ctx->sqn, (const char*)row[7], SRSEPC_HSS_UE_STORE_CLAMP(lengths[7], 6));
 
         // Get QCI
-        if (row[9]) {
-          ctx->qci = atoi(row[9]);
-        }
+        ctx->qci = atoi(row[8]);
 
         // Get Assigned IP, or mark dynamic
-        if (row[10]) {
-          ctx->static_ip_addr = std::string(row[10]);
-        }
+        ctx->static_ip_addr = std::string(row[9]);
 
         // // Debug
         // for(uint i = 0; i < num_fields; i++) {

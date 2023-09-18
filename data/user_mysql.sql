@@ -28,8 +28,7 @@ CREATE TABLE `ue_subscriber` (
   `auth` enum('xor','mil') NOT NULL DEFAULT 'mil',
   `key_identifier` binary(16) NOT NULL,
   `op_type` enum('op','opc') DEFAULT 'opc',
-  `op` binary(16) DEFAULT NULL,
-  `opc` binary(16) DEFAULT NULL,
+  `op_opc` binary(16) DEFAULT NULL,
   `amf` binary(2) NOT NULL,
   `sqn` binary(6) NOT NULL,
   `qci` tinyint NOT NULL,
@@ -44,7 +43,7 @@ CREATE TABLE `ue_subscriber` (
 
 LOCK TABLES `ue_subscriber` WRITE;
 /*!40000 ALTER TABLE `ue_subscriber` DISABLE KEYS */;
-INSERT INTO `ue_subscriber` VALUES (530302814353573,'Tom Cully','mil',0x7E3F3F625FD1A72B483F7A3F3F275400,'opc',0x6B3444C5835A5D3FD3AD3F7E3F3F703F,0x8B5B5F24017F411BA8DE85F03EA16480,0x3F55,0x010203040506,1,'192.168.11.44');
+INSERT INTO `ue_subscriber` VALUES (530302814353573,'Tom Cully','mil',0x7E3F3F625FD1A72B483F7A3F3F275400,'opc',0x6B3444C5835A5D3FD3AD3F7E3F3F703F,0x3F55,0x010203040506,1,'192.168.11.44');
 /*!40000 ALTER TABLE `ue_subscriber` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
