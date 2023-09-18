@@ -32,8 +32,6 @@ extern "C" {
 #include "mysql.h"
 }
 
-#define SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(a, b) (a < b ? a : b)
-
 namespace srsepc {
 
 class ue_store_mysql : public ue_store

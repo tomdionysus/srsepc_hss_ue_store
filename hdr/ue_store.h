@@ -25,6 +25,8 @@
 #include <iostream>
 #include <string>
 
+#define SRSEPC_HSS_UE_STORE_CLAMP(a, b) (a < b ? a : b)
+
 namespace srsepc {
 
 enum hss_auth_algo { HSS_ALGO_XOR, HSS_ALGO_MILENAGE };

@@ -110,7 +110,7 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
         }
 
         // Get KI
-        memcpy(ctx->key, (const char*)row[3], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[3], 16));
+        memcpy(ctx->key, (const char*)row[3], SRSEPC_HSS_UE_STORE_CLAMP(lengths[3], 16));
 
         // Get OP / OPC Type
         if (row[4]) {
@@ -118,14 +118,14 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
         }
 
         // Get OP/OPC
-        memcpy(ctx->op, (const char*)row[5], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[5], 16));
-        memcpy(ctx->opc, (const char*)row[6], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[6], 16));
+        memcpy(ctx->op, (const char*)row[5], SRSEPC_HSS_UE_STORE_CLAMP(lengths[5], 16));
+        memcpy(ctx->opc, (const char*)row[6], SRSEPC_HSS_UE_STORE_CLAMP(lengths[6], 16));
 
         // Get AMF
-        memcpy(ctx->amf, (const char*)row[7], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[7], 2));
+        memcpy(ctx->amf, (const char*)row[7], SRSEPC_HSS_UE_STORE_CLAMP(lengths[7], 2));
 
         // Get SQN
-        memcpy(ctx->sqn, (const char*)row[8], SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(lengths[8], 6));
+        memcpy(ctx->sqn, (const char*)row[8], SRSEPC_HSS_UE_STORE_CLAMP(lengths[8], 6));
 
         // Get QCI
         if (row[9]) {
