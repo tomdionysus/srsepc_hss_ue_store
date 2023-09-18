@@ -22,8 +22,13 @@
 #ifndef SRSEPC_HSS_UE_STORE_CSV_H
 #define SRSEPC_HSS_UE_STORE_CSV_H
 
+#include <cstring>
+#include <fstream>
 #include <iostream>
+#include <map>
+#include <sstream>
 #include <string>
+#include <vector>
 
 #include "ue_store.h"
 
@@ -43,7 +48,7 @@ public:
 private:
   std::string _filename;
 
-  std::map<uint64_t, hss_ue_ctx_t> _user;
+  std::map<uint64_t, hss_ue_ctx_t> _ue_subscriber;
 };
 
 } // namespace srsepc

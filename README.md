@@ -5,7 +5,7 @@ A concept project to extend [srsRAN](https://github.com/srsran/srsRAN_4G) to loa
 ## Roadmap
 
 * Extract a common interface for loading UE context (complete)
-* Implement the standard CSV loader under this interface (pending)
+* Implement the standard CSV loader under this interface (complete)
 * Implement a MySQL loader under this interface (complete) 
 * Implement a PostgreSQL loader under this interface (complete)
 * Add new configuration options into srsEPC to select CSV/MySQL/PostgreSQL and set up the database connection if appropriate (not started)
