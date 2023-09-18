@@ -22,38 +22,40 @@
 #ifndef SRSEPC_HSS_UE_STORE_MYSQL_H
 #define SRSEPC_HSS_UE_STORE_MYSQL_H
 
-#include <iostream> 
-#include <string>
 #include <cstring>
+#include <iostream>
+#include <string>
 
 #include "ue_store.h"
 
 extern "C" {
-	#include "mysql.h"
+#include "mysql.h"
 }
 
-#define SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(a,b) (a < b ? a : b)
+#define SRSEPC_HSS_UE_STORE_MYSQL_MIN_OF(a, b) (a < b ? a : b)
 
 namespace srsepc {
 
-class ue_store_mysql : public ue_store {  
-	public:
-		ue_store_mysql(std::string host, std::string database, std::string username, std::string password);
-		~ue_store_mysql();
+class ue_store_mysql : public ue_store
+{
+public:
+  ue_store_mysql(std::string host, std::string database, std::string username, std::string password);
+  ~ue_store_mysql();
 
-		uint init();
-		uint close();
+  uint init();
+  uint close();
 
-		bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx);
-	private:
-		std::string _host;
-		std::string _database;
-		std::string _username;
-		std::string _password;
+  bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx);
 
-		MYSQL *_mysql_handle;
-};  
+private:
+  std::string _host;
+  std::string _database;
+  std::string _username;
+  std::string _password;
 
-}
+  MYSQL* _mysql_handle;
+};
+
+} // namespace srsepc
 
 #endif // SRSEPC_HSS_UE_STORE_MYSQL

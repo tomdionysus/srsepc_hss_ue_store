@@ -22,35 +22,37 @@
 #ifndef SRSEPC_HSS_UE_STORE_PSQL_H
 #define SRSEPC_HSS_UE_STORE_PSQL_H
 
-#include <iostream> 
-#include <string>
 #include <cstring>
+#include <iostream>
+#include <string>
 
 #include "ue_store.h"
 
 extern "C" {
-	#include "libpq-fe.h"
+#include "libpq-fe.h"
 }
 
-#define SRSEPC_HSS_UE_STORE_PSQL_MIN_OF(a,b) (a < b ? a : b)
+#define SRSEPC_HSS_UE_STORE_PSQL_MIN_OF(a, b) (a < b ? a : b)
 
 namespace srsepc {
 
-class ue_store_psql : public ue_store {  
-	public:
-		ue_store_psql(std::string conninfo);
-		~ue_store_psql();
+class ue_store_psql : public ue_store
+{
+public:
+  ue_store_psql(std::string conninfo);
+  ~ue_store_psql();
 
-		uint init();
-		uint close();
+  uint init();
+  uint close();
 
-		bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx);
-	private:
-		std::string _conninfo;
+  bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx);
 
-		PGconn *_conn;
-};  
+private:
+  std::string _conninfo;
 
-}
+  PGconn* _conn;
+};
+
+} // namespace srsepc
 
 #endif // SRSEPC_HSS_UE_STORE_PSQL

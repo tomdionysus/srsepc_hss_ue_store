@@ -22,8 +22,7 @@
 #ifndef SRSEPC_HSS_UE_STORE_H
 #define SRSEPC_HSS_UE_STORE_H
 
-
-#include <iostream> 
+#include <iostream>
 #include <string>
 
 namespace srsepc {
@@ -51,16 +50,17 @@ struct hss_ue_ctx_t {
   void get_last_rand(uint8_t* rand_);
 };
 
-class ue_store {  
-	public:
-    virtual ~ue_store() { };
+class ue_store
+{
+public:
+  virtual ~ue_store(){};
 
-		virtual uint init() = 0;
-		virtual uint close() = 0;
+  virtual uint init()  = 0;
+  virtual uint close() = 0;
 
-		virtual bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx) = 0;
-}; 
+  virtual bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx) = 0;
+};
 
-}
+} // namespace srsepc
 
 #endif // SRSEPC_HSS_UE_STORE

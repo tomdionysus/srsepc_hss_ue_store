@@ -22,28 +22,30 @@
 #ifndef SRSEPC_HSS_UE_STORE_CSV_H
 #define SRSEPC_HSS_UE_STORE_CSV_H
 
-#include <iostream> 
+#include <iostream>
 #include <string>
 
 #include "ue_store.h"
 
 namespace srsepc {
 
-class ue_store_csv : public ue_store {  
-	public:
-		ue_store_csv(std::string filename);
-		~ue_store_csv();
+class ue_store_csv : public ue_store
+{
+public:
+  ue_store_csv(std::string filename);
+  ~ue_store_csv();
 
-		uint init();
-		uint close();
+  uint init();
+  uint close();
 
-		bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx);
-	private:
-		std::string _filename;
+  bool get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx);
 
-    	std::map<uint64_t, hss_ue_ctx_t> _user;
-};  
+private:
+  std::string _filename;
 
-}
+  std::map<uint64_t, hss_ue_ctx_t> _user;
+};
+
+} // namespace srsepc
 
 #endif // SRSEPC_HSS_UE_STORE_CSV

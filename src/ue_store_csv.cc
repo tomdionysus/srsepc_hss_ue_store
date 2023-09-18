@@ -19,9 +19,9 @@
  *
  */
 
-#include <iostream> 
-#include <string>
+#include <iostream>
 #include <map>
+#include <string>
 
 #include "hdr/ue_store_csv.h"
 
@@ -29,29 +29,33 @@ using namespace std;
 
 namespace srsepc {
 
-ue_store_csv::ue_store_csv(std::string filename) {
-	_filename = filename; 
+ue_store_csv::ue_store_csv(std::string filename)
+{
+  _filename = filename;
 }
 
-ue_store_csv::~ue_store_csv() {
+ue_store_csv::~ue_store_csv() {}
+
+uint ue_store_csv::init()
+{
+  // Load from CSV File
+  return 0;
 }
 
-uint ue_store_csv::init() {
-	// Load from CSV File
-	return 0;
+uint ue_store_csv::close()
+{
+  // Nothing to do
+  return 0;
 }
 
-uint ue_store_csv::close() {
-	// Nothing to do
-	return 0;
+bool ue_store_csv::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
+{
+  std::map<uint64_t, hss_ue_ctx_t>::iterator it;
+  it = _user.find(ssid);
+  if (it != _user.end())
+    return false;
+  *ctx = it->second;
+  return true;
 }
 
-bool ue_store_csv::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx) {
-	std::map<uint64_t, hss_ue_ctx_t>::iterator it;
-	it = _user.find(ssid);
-	if (it != _user.end()) return false;
-	*ctx = it->second;
-	return true;
-}
-
-}
+} // namespace srsepc

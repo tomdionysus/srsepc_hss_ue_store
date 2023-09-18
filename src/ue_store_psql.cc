@@ -23,39 +23,41 @@
 
 using namespace std;
 
-namespace srsepc { 
+namespace srsepc {
 
-ue_store_psql::ue_store_psql(std::string conninfo) {
-	_conninfo = conninfo; 
+ue_store_psql::ue_store_psql(std::string conninfo)
+{
+  _conninfo = conninfo;
 }
 
-ue_store_psql::~ue_store_psql() {
-	
+ue_store_psql::~ue_store_psql() {}
+
+uint ue_store_psql::init()
+{
+  /* Make a connection to the database */
+  _conn = PQconnectdb(_conninfo.c_str());
+
+  /* Check to see that the backend connection was successfully made */
+  if (PQstatus(_conn) != CONNECTION_OK) {
+    fprintf(stderr, "%s", PQerrorMessage(_conn));
+  }
 }
 
-uint ue_store_psql::init() {
-	/* Make a connection to the database */
-    _conn = PQconnectdb(_conninfo.c_str());
-
-    /* Check to see that the backend connection was successfully made */
-    if (PQstatus(_conn) != CONNECTION_OK)
-    {
-        fprintf(stderr, "%s", PQerrorMessage(_conn));
-    }
+uint ue_store_psql::close()
+{
+  PQfinish(_conn);
 }
 
-uint ue_store_psql::close() {
-	PQfinish(_conn);
+bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
+{
+  // Assumption is failure
+  bool success = false;
+
+  // Build the query
+  std::string query = "SELECT `imsi`, `name`, `auth`, `key_identifier`, `op_type`, `op`, "
+                      "`opc`, `amf`, `sqn`, `qci`, `ip_alloc` FROM `user` WHERE `imsi` = ";
+
+  return success;
 }
 
-bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t *ctx) {
-	// Assumption is failure
-	bool success = false;
-
-	// Build the query
-	std::string query = "SELECT `imsi`, `name`, `auth`, `key_identifier`, `op_type`, `op`, `opc`, `amf`, `sqn`, `qci`, `ip_alloc` FROM `user` WHERE `imsi` = ";
-
-	return success;
-}
-
-}
+} // namespace srsepc
