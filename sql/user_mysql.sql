@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `user`
+-- Table structure for table `ue_subscriber`
 --
 
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `ue_subscriber`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
+CREATE TABLE `ue_subscriber` (
   `imsi` bigint NOT NULL,
   `name` varchar(256) NOT NULL,
   `auth` enum('xor','mil') NOT NULL DEFAULT 'mil',
@@ -39,13 +39,13 @@ CREATE TABLE `user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user`
+-- Dumping data for table `ue_subscriber`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (530302814353573,'Tom Cully','mil',0x7E3F3F625FD1A72B483F7A3F3F275400,'opc',0x6B3444C5835A5D3FD3AD3F7E3F3F703F,0x8B5B5F24017F411BA8DE85F03EA16480,0x3F55,0x010203040506,1,'192.168.11.44');
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+LOCK TABLES `ue_subscriber` WRITE;
+/*!40000 ALTER TABLE `ue_subscriber` DISABLE KEYS */;
+INSERT INTO `ue_subscriber` VALUES (530302814353573,'Tom Cully','mil',0x7E3F3F625FD1A72B483F7A3F3F275400,'opc',0x6B3444C5835A5D3FD3AD3F7E3F3F703F,0x8B5B5F24017F411BA8DE85F03EA16480,0x3F55,0x010203040506,1,'192.168.11.44');
+/*!40000 ALTER TABLE `ue_subscriber` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

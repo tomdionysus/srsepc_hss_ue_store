@@ -54,6 +54,7 @@ enable_testing()
 add_executable(
   srsepc_hss_ue_store_test
   src/ue_store_mysql_test.cc
+  src/ue_store_psql_test.cc
 )
 
 target_link_libraries(

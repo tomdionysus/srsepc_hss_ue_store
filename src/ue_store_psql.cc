@@ -25,27 +25,32 @@ using namespace std;
 
 namespace srsepc {
 
-ue_store_psql::ue_store_psql(std::string conninfo)
+ue_store_psql::ue_store_psql(std::string host, std::string database, std::string username, std::string password)
 {
-  _conninfo = conninfo;
+  _host     = host;
+  _database = database;
+  _username = username;
+  _password = password;
 }
 
 ue_store_psql::~ue_store_psql() {}
 
 uint ue_store_psql::init()
 {
-  /* Make a connection to the database */
-  _conn = PQconnectdb(_conninfo.c_str());
-
-  /* Check to see that the backend connection was successfully made */
+  _conn =
+      PQsetdbLogin(_host.c_str(), "5432", nullptr, nullptr, _database.c_str(), _username.c_str(), _password.c_str());
   if (PQstatus(_conn) != CONNECTION_OK) {
-    fprintf(stderr, "%s", PQerrorMessage(_conn));
+    std::cerr << "ue_store_psql::init : Connection to database failed: " << PQerrorMessage(_conn) << std::endl;
+    PQfinish(_conn);
+    return PQstatus(_conn);
   }
+  return 0;
 }
 
 uint ue_store_psql::close()
 {
   PQfinish(_conn);
+  return 0;
 }
 
 bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
@@ -54,8 +59,91 @@ bool ue_store_psql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
   bool success = false;
 
   // Build the query
-  std::string query = "SELECT `imsi`, `name`, `auth`, `key_identifier`, `op_type`, `op`, "
-                      "`opc`, `amf`, `sqn`, `qci`, `ip_alloc` FROM `user` WHERE `imsi` = ";
+  std::string query = "SELECT \"imsi\", \"name\", \"auth\", \"key_identifier\", \"op_type\", \"op\", "
+                      "\"opc\", \"amf\", \"sqn\", \"qci\", \"ip_alloc\" FROM \"ue_subscriber\" WHERE \"imsi\" = " +
+                      std::to_string(ssid);
+
+  // Perform the query
+  PGresult* result = PQexec(_conn, query.c_str());
+
+  // Check if the query execution was successful
+  if (PQresultStatus(result) == PGRES_TUPLES_OK) {
+    int num_rows = PQntuples(result);
+
+    // Check if there is exactly one row
+    if (num_rows == 1) {
+      int num_fields = PQnfields(result);
+
+      // There should be 11 fields
+      if (num_fields == 11) {
+        // Get IMSI
+        ctx->imsi = strtoull(PQgetvalue(result, 0, 0), nullptr, 10);
+
+        // Get Name
+        ctx->name = PQgetvalue(result, 0, 1);
+
+        // Get Auth Type
+        const char* auth = PQgetvalue(result, 0, 2);
+        if (strcmp("xor", auth) == 0) {
+          ctx->algo = HSS_ALGO_XOR;
+        } else if (strcmp("mil", auth) == 0) {
+          ctx->algo = HSS_ALGO_MILENAGE;
+        }
+
+        char*          byteaHexStr;
+        unsigned char* byteaData;
+        size_t         length;
+
+        // Get KI
+        byteaHexStr = PQgetvalue(result, 0, 3);
+        byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
+        memcpy(ctx->key, byteaData, 16);
+        PQfreemem(byteaData);
+
+        // Get OP / OPC Type
+        const char* op_type = PQgetvalue(result, 0, 4);
+        ctx->op_configured  = (strcmp("opc", op_type) == 0);
+
+        // Get OP/OPC
+        byteaHexStr = PQgetvalue(result, 0, 5);
+        byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
+        memcpy(ctx->op, byteaData, 16);
+        PQfreemem(byteaData);
+
+        byteaHexStr = PQgetvalue(result, 0, 6);
+        byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
+        memcpy(ctx->opc, byteaData, 16);
+        PQfreemem(byteaData);
+
+        // Get AMF
+        byteaHexStr = PQgetvalue(result, 0, 7);
+        byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
+        memcpy(ctx->amf, byteaData, 2);
+        PQfreemem(byteaData);
+
+        // Get SQN
+        byteaHexStr = PQgetvalue(result, 0, 8);
+        byteaData   = PQunescapeBytea((const unsigned char*)byteaHexStr, &length);
+        memcpy(ctx->sqn, byteaData, 6);
+        PQfreemem(byteaData);
+
+        // Get QCI
+        ctx->qci = atoi(PQgetvalue(result, 0, 9));
+
+        // Get Assigned IP, or mark dynamic
+        ctx->static_ip_addr = PQgetvalue(result, 0, 10);
+
+        success = true;
+      } else {
+        std::cerr << "ue_store_psql::get_ue_ctx : Too many fields returned" << std::endl;
+      }
+    }
+  } else {
+    std::cerr << "ue_store_psql::get_ue_ctx : Query failed: " << PQerrorMessage(_conn) << std::endl;
+  }
+
+  // Free the result
+  PQclear(result);
 
   return success;
 }

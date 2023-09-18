@@ -63,13 +63,14 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
 
   // Build the query
   std::string query = "SELECT `imsi`, `name`, `auth`, `key_identifier`, `op_type`, `op`, "
-                      "`opc`, `amf`, `sqn`, `qci`, `ip_alloc` FROM `user` WHERE `imsi` = ";
+                      "`opc`, `amf`, `sqn`, `qci`, `ip_alloc` FROM `ue_subscriber` WHERE `imsi` = ";
   query += std::to_string(ssid);
 
   // Perform the query
   int err = mysql_query(_mysql_handle, query.c_str());
   // Fast fail if the query failed
   if (err) {
+    std::cerr << "ue_store_psql::get_ue_ctx : Too many fields returned" << std::endl;
     return false;
   }
 
@@ -145,6 +146,12 @@ bool ue_store_mysql::get_ue_ctx(uint64_t ssid, hss_ue_ctx_t* ctx)
         // printf("\n");
 
         success = true;
+      } else {
+        std::cerr << "ue_store_mysql::get_ue_ctx : Too many fields returned" << std::endl;
+      }
+    } else {
+      if (mysql_errno(_mysql_handle) != 0) {
+        std::cerr << "ue_store_mysql::get_ue_ctx : Query failed: " << mysql_error(_mysql_handle) << std::endl;
       }
     }
 
