@@ -8,9 +8,12 @@ A concept project to extend [srsRAN](https://github.com/srsran/srsRAN_4G) to loa
 * Implement the standard CSV loader under this interface (complete)
 * Implement a MySQL loader under this interface (complete) 
 * Implement a PostgreSQL loader under this interface (complete)
-* Add new configuration options into srsEPC to select CSV/MySQL/PostgreSQL and set up the database connection if appropriate (not started)
-* Integrate `srsepc_hss_ue_store` into srsRAN_4G and open a pull reqyest (not started)
-
+* Integrate `srsepc_hss_ue_store` into srsRAN_4G (pending)
+	* Fork srsRAN_4G [https://github.com/tomdionysus/srsRAN_4G](https://github.com/tomdionysus/srsRAN_4G) (complete)
+	* Bring in this code
+	* Add new configuration options into srsEPC to select CSV / MySQL / PostgreSQL and set up the database connection if appropriate (not started)
+	* Modify this implementation to handle updating SQN numbers in the DB
+	* Open pull request (not started)
 
 ## Dependencies
 
